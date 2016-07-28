@@ -1,3 +1,10 @@
+// TODO:
+// 1. Clear only past location with each iteration - not entire board.
+// 2. CLEAN THIS SHIT UP
+// 3. Implement this.win()
+// 4. fix a bug where going inside yourself doesn't result in a loss.
+// 5. Better UI: add score, highscore (using localStorage), Status messages
+
 var Snake = function(size) {
   this.board = new Board(size);
   this.board.init(0,0);
@@ -14,7 +21,8 @@ var Snake = function(size) {
     }
     else {
       for(var i = 0; i < this.len-1; i++) {
-        if(this.body.head.x === this.body.body[i].x && this.body.head.y === this.body.body[i].y) {
+        if(this.body.head.x === this.body.body[i].x && 
+           this.body.head.y === this.body.body[i].y) {
           return true;
         }
       }
