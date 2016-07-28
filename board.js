@@ -59,8 +59,9 @@ var Board = function(width, height) {
         console.log('Notice: Went ' + direction + '. (go())')
         return true;
       }
+      return false;
+      }
     }
-  }
 
   this._safelyGo = function(obj) {
     var currX = this.x;

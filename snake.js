@@ -1,61 +1,112 @@
-var Snake = function() {
-  this.board = new Board();
-  this.board.init(0,0);
-  this.food = _genNewFood();
+var Snake = function(size) {
+  this.board = new Board(size);
+  this.board.init(4,4);
+  this.food = {x:1, y:1}
   this.len = 1;
   this.body = {
-    head: {x:0, y:0},
+    head: {x:4, y:4},
     body: [],
   };
 
+  this._isInBody = function(coorObj) {
+    if (typeof coorObj.x === 'undefined' || typeof coorObj.y === 'undefined') {
+      console.log('Error - got an invalid argument. (_isInBody())')
+    }
+    else {
+      for(var i = 0; i < this.len-1; i++) {
+        if(this.body.head.x === this.body.body[i].x && this.body.head.y === this.body.body[i].y) {
+          return true;
+        }
+      }
+    return false;
+    }
+  }
 
   this._updateBody = function() {
-    this.body.head =  {x: board.x, y: board.y};
+    this.body.head =  {x: this.board.x, y: this.board.y};
+    console.log('head is ', this.body.head);
     // Extract body coordinates. -1 because head is counted in len.
     this.body.body = this.board.prev.slice((-1 * this.len) - 1);
+    console.log('body is ', this.body.body);
+  }
+
+  this.updateUI = function(bodyColor, headColor, foodColor) {
+    console.log("updateUI called")
+    if(typeof bodyColor === 'undefined') {
+      var bodyColor = 'grey';
+    }
+    if(typeof headColor === 'undefined') {
+      var hradColor = 'black';
+    }
+    if(typeof foodColor === 'undefined') {
+      var foodColor = 'red'
+    }
+    var selectorTemp = function(x,y) {
+        return $('[data-x="' + x + '"][data-y="' + y + '"]');
+    }
+    $('.square').css('background-color', 'white');
+
+    console.log('head', this.body.head);
+    console.log('length', this.len);
+    selectorTemp(this.food.x, this.food.y).css('background-color', foodColor);
+    for (var i = 0; i < this.body.body.length; i++) {
+      selectorTemp(this.body.body[i].x, this.body.body[i].y).css('background-color', bodyColor);
+    }
+    selectorTemp(this.body.head.x, this.body.head.y).css('background-color', headColor);
   }
 
   this.go = function(direction) {
+    var okWithWalls = this.board.go(direction);
+    console.log('OWW', okWithWalls);
     this._updateBody();
     //check whether losing
-    // whether snake hits the wall
-    if(!this.board.go(direction)) {
-      this.lose("Lost! You Hit The Wall!");
-    };
-    // whether snake hit itself
-    var isAutoCannibal = this.body.filter(function(section) {
-      return this.body.head.x === section.x &&\
-             this.body.head.y === section.y;
-    }).length > 0;
-    if(isAutoCannibal) {
-      this.lose("Lost! Shameless autocannibalism!");
-      return;
+    if(this.lost(okWithWalls)) {
+      return false;
     }
-
     // whether snake just ate
-    if(this.head.x === this.food.x && this.head.y === this.food.y) {
-      this.len++;
-      this._updateBody();
+    if(this.body.head.x === this.food.x && this.body.head.y === this.food.y) {
+      this.eat();
       // whether snake is at full size (win)
       if(this.len === (this.board.width * this.board.height)) {
         this.win();
       }
     }
-
-
-    //check whether eating
-    //else - just move
+    return true;
   }
 
   this.eat = function() {
-    // TODO
+    this.len++;
+    this._updateBody();
+    this._genNewFood();
   }
 
-  this.lose = function(message) {
+  this.lost = function(opt) {
+      // whether snake hits the wall
+    // if(!opt) {
+    //   this.lose("Lost! You Hit The Wall!");
+    //   return true;
+    // }
 
+    // whether snake hit itself
+    var isAutoCannibal = this._isInBody(this.body.head);
+    console.log('isAutoCannibal', isAutoCannibal);
+    if(isAutoCannibal) {
+      this.lose("Lost! Shameless autocannibalism!");
+      return true;
+    }
+    return false;
+  }
+  this.lose = function(message) {
+    console.log(message);
   }
 
   this._genNewFood = function() {
-
+    this.food.x = Math.floor(Math.random() * this.board.width);
+    this.food.y = Math.floor(Math.random() * this.board.height);
+    
+    // Don't generate food on the snake's body
+    if(this._isInBody(this.food)) { 
+      this._genNewFood();
+    }
   }
 }
