@@ -1,4 +1,5 @@
-snake = new Snake(20);
+snake = new Snake(2);
+snakeSpeed = 350;
 board = snake.board;
 
 var headColor = '#7EF752';
@@ -43,8 +44,11 @@ var keyToDirection = {
 
 handleClicks = function() {  
   $(document).keypress(function(e) {
-    direction = String.fromCharCode(e.which);
-    console.log('Notice: got keystroke: ' + direction);
+    var tempDirection = String.fromCharCode(e.which); // Ignore non-'WASD' keys
+    if(keyToDirection.hasOwnProperty(tempDirection)) {
+      console.log('Notice: got keystroke: ' + direction);
+      direction = tempDirection;
+    }
   });
 }
     // snake.go(keyToDirection[direction]);
@@ -55,13 +59,11 @@ renderBoard();
 handleClicks();
 
 var interval = setInterval(function() {
-    if(snake.go(keyToDirection[direction]) && !snake.lost()) {
-      snake.updateUI(bodyColor, headColor);
-      if(snake.lost()) {
-        console.log('lost?', snake.lost())
-        clearInterval(interval);
-      }
-    }
-  }, 250);
+  if(snake.go(keyToDirection[direction]) !== 'lost') {
+    snake.updateUI(bodyColor, headColor);
+  } else {
+    clearInterval(interval);
+  }
+}, snakeSpeed);
 
 

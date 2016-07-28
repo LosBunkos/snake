@@ -1,10 +1,10 @@
 var Snake = function(size) {
   this.board = new Board(size);
-  this.board.init(4,4);
+  this.board.init(0,0);
   this.food = {x:1, y:1}
   this.len = 1;
   this.body = {
-    head: {x:4, y:4},
+    head: {x:0, y:0},
     body: [],
   };
 
@@ -61,14 +61,14 @@ var Snake = function(size) {
     this._updateBody();
     //check whether losing
     if(this.lost(okWithWalls)) {
-      return false;
-    }
+      return 'lost';
+    };
     // whether snake just ate
     if(this.body.head.x === this.food.x && this.body.head.y === this.food.y) {
       this.eat();
       // whether snake is at full size (win)
       if(this.len === (this.board.width * this.board.height)) {
-        this.win();
+        console.log('YOU WON!!!');
       }
     }
     return true;
@@ -82,10 +82,10 @@ var Snake = function(size) {
 
   this.lost = function(opt) {
       // whether snake hits the wall
-    // if(!opt) {
-    //   this.lose("Lost! You Hit The Wall!");
-    //   return true;
-    // }
+    if(!opt) {
+      this.lose("Lost! You Hit The Wall!");
+      return true;
+    }
 
     // whether snake hit itself
     var isAutoCannibal = this._isInBody(this.body.head);
@@ -96,6 +96,7 @@ var Snake = function(size) {
     }
     return false;
   }
+
   this.lose = function(message) {
     console.log(message);
   }
