@@ -1,5 +1,5 @@
-snake = new Snake(2);
-snakeSpeed = 350;
+snake = new Snake(20); // 15 = Size (15x15)
+snakeSpeed = 150; // 150 == speed (lower = faster)
 board = snake.board;
 
 var headColor = '#7EF752';
@@ -39,7 +39,8 @@ var keyToDirection = {
   'w' : 'up',
   's' : 'down',
   'a' : 'left',
-  'd' : 'right'
+  'd' : 'right',
+  'p' : 'pause'
 }
 
 handleClicks = function() {  
@@ -59,8 +60,9 @@ renderBoard();
 handleClicks();
 
 var interval = setInterval(function() {
-  if(snake.go(keyToDirection[direction]) !== 'lost') {
+  if(snake.go(keyToDirection[direction]) !== 'lost' && direction !== 'p') {
     snake.updateUI(bodyColor, headColor);
+    snakeSpeed+=100;
   } else {
     clearInterval(interval);
   }

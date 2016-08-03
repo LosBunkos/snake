@@ -8,7 +8,7 @@
 var Snake = function(size) {
   this.board = new Board(size);
   this.board.init(0,0);
-  this.food = {x:1, y:1}
+  this.food = {x:Math.floor(Math.random() * this.board.width), y: Math.floor(Math.random() * this.board.height)}
   this.len = 1;
   this.body = {
     head: {x:0, y:0},
@@ -20,7 +20,7 @@ var Snake = function(size) {
       console.log('Error - got an invalid argument. (_isInBody())')
     }
     else {
-      for(var i = 0; i < this.len-1; i++) {
+      for(var i = 0; i < this.len; i++) {
         if(this.body.head.x === this.body.body[i].x && 
            this.body.head.y === this.body.body[i].y) {
           return true;
@@ -115,6 +115,7 @@ var Snake = function(size) {
     
     // Don't generate food on the snake's body
     if(this._isInBody(this.food)) { 
+      console.log('generating new food!!! <-----')
       this._genNewFood();
     }
   }
